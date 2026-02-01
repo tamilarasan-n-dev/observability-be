@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+# Allow these files
+!package*.json
+!tsconfig.json
+!src/
