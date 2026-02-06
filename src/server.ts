@@ -4,12 +4,25 @@ import { StatusCodes } from "http-status-codes";
 import { errorHandler } from "./common/middleware/errorHandler.js";
 import { ServiceResponse } from "./common/models/serviceResponse.js";
 import { handleServiceResponse } from "./common/utils/httpHandlers.js";
+import { env } from "./common/utils/envConfig.js";
 import observerRouter from "./api/observer/observer.router.js";
 
 const app: Express = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = env.CORS_ORIGIN.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+  })
+);
 app.use(express.json());
 
 // Trust proxy for IP detection
